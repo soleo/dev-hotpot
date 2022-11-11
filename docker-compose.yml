@@ -6,13 +6,16 @@ services:
       - web-storefront
       - mock-service
     ports:
-      - 80:80
+      - 9443:443
     environment:
       - WEB_FRONTEND_URL=${WEB_FRONTEND_URL:-web-storefront:80}
-      - API_GATEWAY_URL=${API_GATEWAY_URL:-mock-service:1080}
-      - NGINX_SERVER_NAME=localhost
+      - API_GATEWAY_URL=${API_GATEWAY_URL:-mock-service:1090}
+      - NGINX_FORWARDED_HOST=sit.stopandshop.com
+      - NGINX_SSL_CERT=localhost+2.pem
+      - NGINX_SSL_CERT_KEY=localhost+2-key.pem
     volumes:
       - ./web-lb/templates:/etc/nginx/templates
+      - ./web-lb/certs:/etc/nginx/ssl
   web-storefront:
     image: nginx
     ports:
@@ -26,8 +29,9 @@ services:
       - ./web-storefront/templates:/etc/nginx/templates
   mock-service:
     image: mockserver/mockserver:5.14.0
+    command: -logLevel DEBUG -serverPort 1090 -proxyRemotePort 443 -proxyRemoteHost sit.stopandshop.com
     ports:
-      - 1080:1080
+      - 1080:1090
     environment:
       MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
       MOCKSERVER_INITIALIZATION_JSON_PATH: /config/initializerJson.json
