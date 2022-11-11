@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  web-lb:
+    image: nginx
+    depends_on:
+      - web-storefront
+      - mock-service
+    ports:
+      - 80:80
+    environment:
+      - WEB_FRONTEND_URL=${WEB_FRONTEND_URL:-web-storefront:80}
+      - API_GATEWAY_URL=${API_GATEWAY_URL:-mock-service:1080}
+      - NGINX_SERVER_NAME=localhost
+    volumes:
+      - ./web-lb/templates:/etc/nginx/templates
+  web-storefront:
+    image: nginx
+    ports:
+      - 8081:80
+    environment:
+      - WEB_APP_VERSION=${WEB_APP_VERSION:-0.0.1}
+    volumes:
+      - type: bind
+        source: ./web-storefront/storefront/build
+        target: /usr/share/nginx/html
+      - ./web-storefront/templates:/etc/nginx/templates
+  mock-service:
+    image: mockserver/mockserver:5.14.0
+    ports:
+      - 1080:1080
+    environment:
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/initializerJson.json
+    volumes:
+      - type: bind
+        source: ./mock-service
+        target: /config

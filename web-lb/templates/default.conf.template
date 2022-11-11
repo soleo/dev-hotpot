@@ -1,0 +1,50 @@
+server {
+    listen       80;
+    listen  [::]:80;
+
+    server_name  ${NGINX_SERVER_NAME};
+    client_max_body_size 20M;
+    resolver 127.0.0.11;
+    location ~* .(png|ico|gif|jpg|jpeg|css|js)$ {
+        proxy_pass http://${WEB_FRONTEND_URL}$request_uri;
+        proxy_redirect off;
+    }
+
+    location /api/ {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_pass_request_headers      on;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Nginx-Api-Proxy true;
+
+        proxy_pass http://${API_GATEWAY_URL}$request_uri;
+        proxy_redirect off;
+        proxy_request_buffering off;
+    }
+
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_pass_request_headers      on;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Nginx-Web-Proxy true;
+
+        proxy_pass http://${WEB_FRONTEND_URL}$request_uri;
+        proxy_redirect off;
+        proxy_request_buffering off;
+    }
+
+
+    error_page  404              /404.html;
+    location = /40x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}
+

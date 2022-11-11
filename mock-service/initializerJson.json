@@ -1,0 +1,18 @@
+[
+    {
+      "httpRequest": {
+        "path": "/health"
+      },
+      "httpResponse": {
+        "body": "UP"
+      }
+    },
+    {
+        "httpRequest": {
+          "path": "/api/health"
+        },
+        "httpResponse": {
+          "body": "UP"
+        }
+    }
+  ]
