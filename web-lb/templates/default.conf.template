@@ -34,23 +34,8 @@ server {
         proxy_redirect off;
     }
 
-    location /api/ {
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Host ${NGINX_FORWARDED_HOST};
-        proxy_set_header  X-Real-IP       $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_pass_request_headers      on;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Nginx-Api-Proxy true;
-        	
-        proxy_ssl_verify off;
-        proxy_pass ${API_GATEWAY_URL}$request_uri;
-        proxy_redirect off;
-        proxy_request_buffering off;
-    }
-
     location / {
+
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Host ${NGINX_FORWARDED_HOST};
@@ -62,7 +47,21 @@ server {
         proxy_redirect off;
         proxy_request_buffering off;
     }
+    location /api/ {
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Host ${NGINX_FORWARDED_HOST};
+                    proxy_set_header X-Real-IP       $remote_addr;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    proxy_pass_request_headers      on;
+                    proxy_set_header Host $http_host;
+                    proxy_set_header X-Nginx-Api-Proxy true;
 
+                    proxy_ssl_verify off;
+                    proxy_pass ${API_GATEWAY_URL}$request_uri;
+                    proxy_redirect off;
+                    proxy_request_buffering off;
+    }
 
     error_page  404              /404.html;
     location = /40x.html {

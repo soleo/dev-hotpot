@@ -20,10 +20,10 @@ server:
    port: 8080
    ssl:
      enabled: true
-#     key-alias: scg
-#     key-store-password: scg1234
-#     key-store: classpath:scg-keystore.p12
-#     key-store-type: PKCS12
+     key-alias: scg
+     key-store-password: scg1234
+     key-store: file:/etc/app/scg-keystore.p12
+     key-store-type: PKCS12
 
 management:
   endpoint:
